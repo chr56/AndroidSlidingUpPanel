@@ -10,7 +10,7 @@ plugins {
     // id("signing")
 }
 
-val libVersion = "0.0.1"
+val libVersion = "1.0"
 
 android {
     compileSdk = 35

@@ -5,6 +5,10 @@ This is a fork of Umano's Android Sliding Up Panel.
 
 ### Changelog
 
+##### v1.0
+- Migrate to the latest toolchain.
+- Fix some warnings
+
 ### Licence
 
 > Licensed under the Apache License, Version 2.0 (the "License");
