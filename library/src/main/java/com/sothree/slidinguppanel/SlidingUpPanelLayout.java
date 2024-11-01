@@ -19,6 +19,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 
 import com.sothree.slidinguppanel.library.R;
@@ -331,9 +332,9 @@ public class SlidingUpPanelLayout extends ViewGroup {
         // If the shadow height is zero, don't show the shadow
         if (mShadowHeight > 0) {
             if (mIsSlidingUp) {
-                mShadowDrawable = getResources().getDrawable(R.drawable.above_shadow);
+                mShadowDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.above_shadow, null);
             } else {
-                mShadowDrawable = getResources().getDrawable(R.drawable.below_shadow);
+                mShadowDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.below_shadow, null);
             }
         } else {
             mShadowDrawable = null;
