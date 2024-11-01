@@ -1,0 +1,41 @@
+name: ci
+on:
+  push:
+    branches:
+      - 'master'
+    paths-ignore:
+      - 'README.md'
+
+  workflow_dispatch:
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Build with Gradle
+        run: ./gradlew library:assembleRelease --stacktrace
+
+      - name: Upload aar
+        uses: actions/upload-artifact@v4
+        with:
+          name: \AndroidSlidingUpPanel
+          retention-days: 15
+          path: |
+            ./storage/build/outputs/aar/*-release.aar
+
