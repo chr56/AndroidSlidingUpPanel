@@ -19,6 +19,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 
@@ -27,6 +28,7 @@ import com.sothree.slidinguppanel.library.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/** @noinspection unused, JavadocDeclaration, SameParameterValue */
 public class SlidingUpPanelLayout extends ViewGroup {
 
     public static final String TAG = SlidingUpPanelLayout.class.getSimpleName();
@@ -44,7 +46,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
     /**
      * Default initial state for the component
      */
-    private static PanelState DEFAULT_SLIDE_STATE = PanelState.COLLAPSED;
+    private static final PanelState DEFAULT_SLIDE_STATE = PanelState.COLLAPSED;
 
     /**
      * Default height of the shadow above the peeking out panel
@@ -214,7 +216,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
     private float mInitialMotionY;
     private boolean mIsScrollableViewHandlingTouch = false;
 
-    private List<PanelSlideListener> mPanelSlideListeners = new ArrayList<>();
+    private final List<PanelSlideListener> mPanelSlideListeners = new ArrayList<>();
     private View.OnClickListener mFadeOnClickListener;
 
     private final ViewDragHelper mDragHelper;
@@ -238,14 +240,14 @@ public class SlidingUpPanelLayout extends ViewGroup {
          * @param panel       The child view that was moved
          * @param slideOffset The new offset of this sliding pane within its range, from 0-1
          */
-        public void onPanelSlide(View panel, float slideOffset);
+        void onPanelSlide(View panel, float slideOffset);
 
         /**
          * Called when a sliding panel state changes
          *
          * @param panel The child view that was slid to an collapsed position
          */
-        public void onPanelStateChanged(View panel, PanelState previousState, PanelState newState);
+        void onPanelStateChanged(View panel, PanelState previousState, PanelState newState);
     }
 
     /**
@@ -1251,7 +1253,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
     }
 
     @Override
-    public void draw(Canvas c) {
+    public void draw(@NonNull Canvas c) {
         super.draw(c);
 
         // draw the shadow
