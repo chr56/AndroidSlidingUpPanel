@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -283,18 +284,12 @@ public class SlidingUpPanelLayout extends ViewGroup {
 
         Interpolator scrollerInterpolator = null;
         if (attrs != null) {
-            TypedArray defAttrs = context.obtainStyledAttributes(attrs, DEFAULT_ATTRS);
-
-            if (defAttrs != null) {
-                int gravity = defAttrs.getInt(0, Gravity.NO_GRAVITY);
-                setGravity(gravity);
+            try (TypedArray defAttrs = context.obtainStyledAttributes(attrs, DEFAULT_ATTRS)) {
+                setGravity(defAttrs.getInt(0, Gravity.NO_GRAVITY));
             }
 
-            defAttrs.recycle();
+            try (TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SlidingUpPanelLayout)) {
 
-            TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SlidingUpPanelLayout);
-
-            if (ta != null) {
                 mPanelHeight = ta.getDimensionPixelSize(R.styleable.SlidingUpPanelLayout_umanoPanelHeight, -1);
                 mShadowHeight = ta.getDimensionPixelSize(R.styleable.SlidingUpPanelLayout_umanoShadowHeight, -1);
                 mParallaxOffset = ta.getDimensionPixelSize(R.styleable.SlidingUpPanelLayout_umanoParallaxOffset, -1);
@@ -317,8 +312,6 @@ public class SlidingUpPanelLayout extends ViewGroup {
                     scrollerInterpolator = AnimationUtils.loadInterpolator(context, interpolatorResId);
                 }
             }
-
-            ta.recycle();
         }
 
         final float density = context.getResources().getDisplayMetrics().density;
@@ -401,6 +394,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
         mIsTouchEnabled = enabled;
     }
 
+    /** @noinspection BooleanMethodIsAlwaysInverted*/
     public boolean isTouchEnabled() {
         return mIsTouchEnabled && mSlideableView != null && mSlideState != PanelState.HIDDEN;
     }
@@ -523,7 +517,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
      *
      * @param listener
      */
-    public void setFadeOnClickListener(View.OnClickListener listener) {
+    public void setFadeOnClickListener(OnClickListener listener) {
         mFadeOnClickListener = listener;
     }
 
@@ -1360,7 +1354,8 @@ public class SlidingUpPanelLayout extends ViewGroup {
 
         @Override
         public void onViewDragStateChanged(int state) {
-            if (mDragHelper.getViewDragState() == ViewDragHelper.STATE_IDLE) {
+            int dragState = mDragHelper != null ? mDragHelper.getViewDragState() : ViewDragHelper.INVALID_POINTER;
+            if (dragState == ViewDragHelper.STATE_IDLE) {
                 mSlideOffset = computeSlideOffset(mSlideableView.getTop());
                 applyParallaxForCurrentSlideOffset();
 
@@ -1392,6 +1387,12 @@ public class SlidingUpPanelLayout extends ViewGroup {
 
         @Override
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
+            if (mDragHelper == null) {
+                Log.i(TAG, "DragHelper is not available now when releasing view " + releasedChild.toString() + "!");
+                return;
+            }
+
+            //noinspection UnusedAssignment
             int target = 0;
 
             // direction is always positive if we are sliding in the expanded direction
@@ -1471,17 +1472,15 @@ public class SlidingUpPanelLayout extends ViewGroup {
 
         public LayoutParams(LayoutParams source) {
             super(source);
+            this.weight = source.weight;
         }
 
         public LayoutParams(Context c, AttributeSet attrs) {
             super(c, attrs);
 
-            final TypedArray ta = c.obtainStyledAttributes(attrs, ATTRS);
-            if (ta != null) {
+            try (TypedArray ta = c.obtainStyledAttributes(attrs, ATTRS)) {
                 this.weight = ta.getFloat(0, 0);
             }
-
-            ta.recycle();
         }
     }
 }
